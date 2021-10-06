@@ -1,0 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+public class UI_Manager : MonoBehaviour
+{
+   public Sprite[] vidas;
+   public Image vidas_display;
+   public int puntaje=0;
+   public Text puntaje_texto;
+   public GameObject menu;
+   public void actualizarvidas(int vida)
+   {
+       vidas_display.sprite=vidas[vida];
+   }
+
+   public void actualizarpuntaje()
+   {
+     puntaje+=10;
+     puntaje_texto.text="Puntaje: "+puntaje;
+   }
+   public void mostrar_titulo()
+   {
+      menu.SetActive(true);
+   }
+   public void ocultar_titulo()
+   {
+       menu.SetActive(false);
+       puntaje_texto.text="Puntaje: 00";
+   }
+}
