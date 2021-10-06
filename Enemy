@@ -1,0 +1,113 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class enemyIA : MonoBehaviour
+{
+    private float velocidad=4.0f;
+    public GameObject _laser;
+    public GameObject explosion;
+    public bool shoot=false;
+    public float fuego=0.25f;
+    public float puedes_disparar=0.0f;
+    public int vida=2;
+    public UI_Manager puntaje;
+    // Start is called before the first frame update
+    void Start()
+    {
+        puntaje= GameObject.Find("Canvas").GetComponent<UI_Manager>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+      movimiento();
+      atacar();
+      if (vida <=0)
+      {
+        Instantiate(explosion,transform.position ,Quaternion.identity);
+        puntaje.actualizarpuntaje();
+        Destroy(this.gameObject);
+      }
+    }
+
+    public void movimiento()
+    {
+      float px= transform.position.x;
+      float py= transform.position.y;
+
+      if(py<-6.2f)
+      {
+            transform.position= new Vector3(Random.Range(-7.0f, 7.0f),6.04f,0.0f);
+      }
+      //6.04
+      transform.Translate(Vector3.down*Time.deltaTime*velocidad);
+    }
+
+    public void atacar()
+    {
+       if(Time.time>puedes_disparar)
+         {
+       if (shoot ==false)
+         {
+             disparos();
+         }
+
+       if(shoot == true)
+         {
+         Instantiate(_laser,transform.position + new Vector3(0.2f,-1.7f,0.0f),Quaternion.identity);
+         Instantiate(_laser,transform.position + new Vector3(-0.2f,-1.7f,0.0f),Quaternion.identity);
+         }
+
+          puedes_disparar=Time.time + fuego;
+         }
+
+    }
+    public void disparos()
+      {
+        shoot=true;
+        StartCoroutine(dos_disparos());
+      }
+    public IEnumerator dos_disparos()//funcion para declarar tiempo
+      {
+        yield return new WaitForSeconds(4.0f);//espera tiempo
+        shoot=false;
+      }
+      public void lastimado()
+      {
+         vida--;
+      }
+
+      private void OnTriggerEnter2D(Collider2D other)
+      {
+          //Debug.Log("Name"+ other.name);
+          if(other.tag == "Player")
+          {
+             Player jugador = other.GetComponent<Player>();
+             if(jugador != null)
+             {
+               jugador.colision();
+             }
+             //StartCoroutine(jugador.tripledisparo());
+             Instantiate(explosion,transform.position,Quaternion.identity);
+             puntaje.actualizarpuntaje();
+             Destroy(this.gameObject);
+
+          }
+
+
+          if(other.tag == "LaserPlayer")
+          {
+             laser l1 = other.GetComponent<laser>();
+             if(l1 != null)
+             {
+               l1.damage();
+               vida--;
+             }
+
+
+          }
+
+      }
+
+}
